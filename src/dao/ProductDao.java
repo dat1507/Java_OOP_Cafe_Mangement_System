@@ -57,6 +57,8 @@ public class ProductDao {
         DbOperations.setDataOrDelete(query, "Product Deleted Successfully");
     }
     
+    
+    // -----------------------------------------------------------------------------------------
     // Place Order Page
     public static ArrayList<Product> getAllRecordsByCategory(String category) { 
         ArrayList<Product> arrayList = new ArrayList<>();

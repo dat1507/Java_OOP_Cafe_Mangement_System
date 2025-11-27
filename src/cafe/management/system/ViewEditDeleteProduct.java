@@ -98,13 +98,13 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Name: ");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 270, -1, -1));
+        jLabel3.setText("Name ");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 260, -1, -1));
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Category");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 320, 75, -1));
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 310, 75, -1));
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
@@ -133,6 +133,11 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
         getContentPane().add(txtPrice, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 360, 350, -1));
 
         jComboBox1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
         getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 310, 350, -1));
 
         btnUpdate.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -204,61 +209,96 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         // TODO add your handling code here:
+        // Tạo 1 Object Product => chứa thông tin sản phẩm cần cập nhật 
         Product product = new Product();
+        // Lấy giá trị id hiển thị trên label ( lblId ), vốn đc gán sau khi user chọn 1 dòng trong bảng sản phẩm ( Event MouseClicked ) 
+        // Integer.parseInt(.. ) : Convert chuỗi id ở trên từ String sang int, vì method setId() yêu cầu datatype int 
+        // Lưu giá trị sau khi convert vào biến int id
         int id = Integer.parseInt(lblId.getText());
+        // Gán các giá trị tương ứng vào Object Product 
         product.setId(id);
         product.setName(txtName.getText());
         product.setCategory((String) jComboBox1.getSelectedItem());
         product.setPrice(txtPrice.getText());
+        // Update Product trong database 
         ProductDao.update(product);
+        // Reload animation
         setVisible(false);
         new ViewEditDeleteProduct().setVisible(true);
     }//GEN-LAST:event_btnUpdateActionPerformed
-
+    
+    // Hàm để hiện thị thông tin của các Product trên bảng JTable1
     private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
         // TODO add your handling code here:
-        // 1. Xử lý phần Table (Fix lỗi các dòng trắng ở đầu)
+        // 1. Xử lý phần Table
         DefaultTableModel dtm = (DefaultTableModel) jTable1.getModel();
 
-        // Dòng quan trọng: Xóa hết các dòng trống mặc định do NetBeans tạo ra
+        // Xóa các dòng trống mặc định của NetBeans
         dtm.setRowCount(0);
 
+        // Tạo 1 list các Object thuộc class Product 
         ArrayList<Product> list = ProductDao.getAllRecords();
+        // Tạo 1 iterator để duyệt qua list 
         Iterator<Product> itr = list.iterator();
+        // Với mỗi hàng Product, thêm cái attributes tương ứng 
         while (itr.hasNext()) {
             Product productObj = itr.next();
             dtm.addRow(new Object[]{productObj.getId(), productObj.getName(), productObj.getCategory(), productObj.getPrice()});
         }
 
-        // 2. Xử lý phần ComboBox (Fix lỗi không hiển thị category)
+        // 2. Xử lý phần ComboBox   
         // Lấy danh sách Category để đổ vào ComboBox ngay khi mở form
         ArrayList<Category> categoryList = CategoryDao.getAllRecords();
         // Xóa các item cũ nếu có để tránh trùng lặp khi reload form
         jComboBox1.removeAllItems();
-
+        
+        // Duyệt qua danh sách Category
         Iterator<Category> categoryItr = categoryList.iterator();
+        // Với mỗi hàng trong danh sách Category, thêm vào jComboBox1
         while (categoryItr.hasNext()) {
             Category categoryObj = categoryItr.next();
             jComboBox1.addItem(categoryObj.getName());
         }
     }//GEN-LAST:event_formComponentShown
-
+    
+    // Event khi user Clicked vào 1 hàng trong JTable1 ( Chọn 1 Product )
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         // TODO add your handling code here:
+        
+        // Lấy index của hàng được chọn
         int index = jTable1.getSelectedRow();
+        // Lấy giá trị của từng ô trong bảng qua .getModel()
         TableModel model = jTable1.getModel();
+        
+        // Lấy id của Product ( hàng được chọn ) => hiển thị lên UI qua lblId
         String id = model.getValueAt(index, 0).toString();
         lblId.setText(id);
+        
+        // Lấy name của Product ( hàng được chọn ) => hiển thị lên UI qua txtName
         String name = model.getValueAt(index, 1).toString();
         txtName.setText(name);
+        
+        // Lấy Category của Product đc chọn
         String category = model.getValueAt(index, 2).toString();
+        
+        // Lấy Price của Product đc chọn => hiển thị lên UI qua txtPrice 
         String price = model.getValueAt(index, 3).toString();
         txtPrice.setText(price);
-
+        
+        // Enable Update & Delete button
         btnUpdate.setEnabled(true);
         btnDelete.setEnabled(true);
+        
+        // Xóa toàn bộ item cũ trong ComboBox => tránh trùng lặp
         jComboBox1.removeAllItems();
+        // Add category hiện tại của item được click lên đầu danh sách => hiển thị đúng category đang đc chọn
         jComboBox1.addItem(category);
+        
+        // Lấy list category và add vào ComboBox:
+        // Lấy toàn bộ danh sách category từ database
+        // Duyệt qua từng category
+        // Nếu Category ko trùng với category hiện tại của item => Add vào ComboBox
+        // => ComboBox có đầy đủ category nhưng category của Product đc chọn sẽ nằm ở trên cùng
         ArrayList<Category> categoryList = CategoryDao.getAllRecords();
         Iterator<Category> categoryItr = categoryList.iterator();
         while (categoryItr.hasNext()) {
@@ -290,6 +330,10 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
         // TODO add your handling code here:
         setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
 
     /**
      * @param args the command line arguments
