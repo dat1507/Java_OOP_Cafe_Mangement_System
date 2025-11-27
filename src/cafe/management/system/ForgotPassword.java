@@ -40,6 +40,7 @@ public class ForgotPassword extends javax.swing.JFrame {
         txtNewPassword.setText("");
     }
 
+    // Check if email is valid 
     public void validateEmail() {
         email = txtEmail.getText();
         if (email.matches(emailPattern)) {
@@ -49,6 +50,7 @@ public class ForgotPassword extends javax.swing.JFrame {
         }
     }
 
+    // Check if user's input is valid
     public void validateFields() {
         String password = txtNewPassword.getText();
         String answer = txtAnswer.getText();
@@ -214,6 +216,8 @@ public class ForgotPassword extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // Nếu nhập 1 email đã đăng ký => hiển thị SecurityQuestion 
+    // Nếu nhập 1 email ch đký => hiện thị báo lỗi 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
         email = txtEmail.getText();
@@ -273,6 +277,7 @@ public class ForgotPassword extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnExitActionPerformed
 
+    // Update Password
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         // TODO add your handling code here:
         String answer = txtAnswer.getText();

@@ -14,14 +14,18 @@ import java.util.ArrayList;
  * @author phuoc
  */
 public class UserDao {
-
-    // Hàm save ( Signup Page ) => Save a user after registered 
+    
+    //-----------------------------------------------------------------------------------
+    // SignUp
+    // Hàm save => Save a user after registered 
     public static void save(User user) {
         String query = "insert into user(name, email, mobileNumber, address, password, securityQuestion, answer, status) values('" + user.getName() + "', '" + user.getEmail() + "', '" + user.getMobileNumber() + "', '" + user.getAddress() + "', '" + user.getPassword() + "', '" + user.getSecurityQuestion() + "', '" + user.getAnswer() + "', '" + user.getStatus() + "')";
         DbOperations.setDataOrDelete(query, "Registered Successfully! Wait for Admin Approval!");
     }
-
-    // Hàm Login ( Được sử dụng trong Login Page ) lấy email và password từ user, sau đó tìm trong database xem có email và password nào trùng không, nếu có sẽ return user đó
+    
+    //-----------------------------------------------------------------------------------
+    // Login
+    // Hàm Login lấy email và password từ user, sau đó tìm trong database xem có email và password nào trùng không, nếu có sẽ return user đó
     // nếu ko thì sẽ hiện thông báo qua showMessageDialog
     public static User login(String email, String password) {
         User user = null;
@@ -54,7 +58,13 @@ public class UserDao {
         }
         return user;
     }
-
+    
+    
+    //-------------------------------------------------------------------
+    // ForgotPassword 
+    // gửi query SQL để tìm user theo email 
+    // nếu tìm thấy =>  tạo User Object và gán SecurityQuestion + Email 
+    // nếu ko => return null
     public static User getSecurityQuestion(String email) {
         User user = null;
         try {
@@ -75,6 +85,10 @@ public class UserDao {
         String query = "update user set password = '" + newPassword + "' where email = '" + email + "' ";
         DbOperations.setDataOrDelete(query, "Password Changed Successfully");
     }
+    
+    
+    //--------------------------------------------------------------------------------
+    // VerifyUsers
     
     public static ArrayList<User> getAllRecords(String email) { 
         ArrayList<User> arrayList = new ArrayList<>(); 

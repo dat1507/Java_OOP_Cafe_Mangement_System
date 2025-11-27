@@ -27,11 +27,19 @@ public class VerifyUsers extends javax.swing.JFrame {
         initComponents();
     }
     
+    // Hàm để lấy thông tin người dùng ( trừ admin ) và hiển thị lên bảng 
+    // Lấy 1 parameter là email 
     public void getAllRecords(String email) { 
+        // Lấy model của jTable1, type casting về DefaultTableModel => có thể thêm/ xóa dòng trên bảng 
         DefaultTableModel dtm = (DefaultTableModel) jTable1.getModel(); 
+        // Xóa toàn bộ dữ liệu hiện tại trong bảng => clean table before add new data
         dtm.setRowCount(0); 
-        ArrayList<User> list = UserDao.getAllRecords(email); 
+        
+        // Lấy list User từ Database 
+        // Tạo iterator để duyệt của từng user trong list 
+        ArrayList<User> list = UserDao.getAllRecords(email);
         Iterator<User> itr = list.iterator(); 
+        // Thêm từng user vào table ( trừ admin ) 
         while(itr.hasNext()) { 
             User userObj = itr.next(); 
             if (!userObj.getEmail().equals("admin@gmail.com")) { 
@@ -139,12 +147,17 @@ public class VerifyUsers extends javax.swing.JFrame {
         getAllRecords(email);
     }//GEN-LAST:event_txtEmailKeyReleased
 
+    // Event khi người dùng click vào bảng 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         // TODO add your handling code here:
+        // Lấy index của hàng đc chọn
         int index = jTable1.getSelectedRow();
+        // Lấy model để đọc qua từng ô trong bảng 
         TableModel model = jTable1.getModel(); 
+        // Lấy email và status của user đc chọn
         String email = model.getValueAt(index, 2).toString();
         String status = model.getValueAt(index, 6).toString();
+        // đổi status của user đc chọn 
         if(status.equals("true")) 
             status = "false"; 
         else 
