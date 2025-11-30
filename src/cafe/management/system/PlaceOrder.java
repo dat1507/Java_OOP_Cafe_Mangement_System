@@ -15,6 +15,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JSpinner;
 import javax.swing.table.DefaultTableModel;
 import dao.ProductDao;
+import dao.UserDao;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,6 +43,8 @@ public class PlaceOrder extends javax.swing.JFrame {
     public String mobileNumberPattern = "^[0-9]*$";
 
     public String userEmail;
+    
+    public model.User userModel;
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PlaceOrder.class.getName());
 
@@ -96,10 +99,26 @@ public class PlaceOrder extends javax.swing.JFrame {
     }
 
     public void validateField() {
-        String customerName = txtCusName.getText();
-        String customerMobileNumber = txtCusMobileNo.getText();
-        String customerEmail = txtCusEmail.getText();
-        if (!customerEmail.equals("") && customerMobileNumber.matches(mobileNumberPattern) && customerMobileNumber.length() == 10 && customerEmail.matches(emailPattern) && grandTotal > 0) {
+        // Lấy dữ liệu và dùng .trim() để cắt khoảng trắng đầu/cuối
+        String customerName = txtCusName.getText().trim();
+        String customerMobileNumber = txtCusMobileNo.getText().trim();
+        String customerEmail = txtCusEmail.getText().trim();
+        
+        // Regex email đơn giản hơn (cho phép dấu chấm, gạch dưới...)
+        // Ví dụ: abc.xyz@gmail.com vẫn nhận
+        String simpleEmailPattern = "^.+@.+\\..+$"; 
+
+        // Kiểm tra điều kiện:
+        // 1. Tên không được để trống
+        // 2. Email đúng định dạng
+        // 3. SĐT phải là số và đúng 10 ký tự
+        // 4. Giỏ hàng phải có hàng (grandTotal > 0)
+        if (!customerName.equals("") && 
+            customerEmail.matches(simpleEmailPattern) && 
+            customerMobileNumber.matches(mobileNumberPattern) && 
+            customerMobileNumber.length() == 10 && 
+            grandTotal > 0) {
+            
             btnGenerateBillPrint.setEnabled(true);
         } else {
             btnGenerateBillPrint.setEnabled(false);
@@ -421,6 +440,9 @@ public class PlaceOrder extends javax.swing.JFrame {
         // --- PHẦN MỚI: Xóa 4 dòng trống của bảng Cart (jTable2) ---
         DefaultTableModel dtm = (DefaultTableModel) jTable2.getModel();
         dtm.setRowCount(0);
+        
+        // Lấy thông tin User đầy đủ (bao gồm cả số lần mua nếu là Guest)
+        userModel = UserDao.getUserByEmail(userEmail);
         // ----------------------------------------------------------
         billId = Integer.parseInt(BillDao.getId());
         jLabel3.setText(BillDao.getId());
@@ -542,27 +564,52 @@ public class PlaceOrder extends javax.swing.JFrame {
         SimpleDateFormat dFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date date = new Date();
         String todaydate = dFormat.format(date);
-        String total = String.valueOf(grandTotal);
-        String createdBy = userEmail;
         
-        // Lưu Bill vào Database
+        // --- 1. ÁP DỤNG TÍNH ĐA HÌNH (POLYMORPHISM) ---
+        // Gọi hàm calculateFinalBill(). 
+        // Nếu userModel là Admin -> Chạy code file Admin.java (giữ nguyên giá)
+        // Nếu userModel là Guest -> Chạy code file Guest.java (giảm giá nếu mua > 10 lần)
+        int finalTotal = userModel.calculateFinalBill(grandTotal);
+        String totalStr = String.valueOf(finalTotal);
+        
+        // --- 2. XỬ LÝ KHUYẾN MÃI & CẬP NHẬT DB ---
+        // Nếu là Guest (check bằng từ khóa instanceof)
+        if (userModel instanceof model.Guest) {
+            // Nếu giá sau cùng NHỎ HƠN giá gốc => Có giảm giá
+            if (finalTotal < grandTotal) {
+                int discountAmount = grandTotal - finalTotal;
+                JOptionPane.showMessageDialog(null, 
+                    "You've made your 10th purchase!\n" +
+                    "Here's a 5% discount as our thank you.\n" +
+                    "Original Price: " + grandTotal + "\n" +
+                    "Discount: " + discountAmount + "\n" +
+                    "Final Total: " + finalTotal);
+                
+                // Đã dùng khuyến mãi xong -> Reset số lần mua về 0
+                UserDao.resetPurchaseCount(userEmail);
+            } else {
+                // Không được giảm giá -> Tăng số lần tích lũy lên 1
+                UserDao.incrementPurchaseCount(userEmail);
+            }
+        }
+        // ----------------------------------------------
+
+        String createdBy = userEmail;
         Bill bill = new Bill();
         bill.setId(billId);
         bill.setName(customerName);
         bill.setMobileNumber(customerMobileNumber);
         bill.setEmail(customerEmail);
-        bill.setTotal(total);
+        bill.setTotal(totalStr); // Lưu giá cuối cùng (đã giảm) vào Bill
         bill.setCreatedBy(createdBy);
         bill.setDate(todaydate);
         BillDao.save(bill);
 
-        // --- PHẦN SỬA LỖI PDF ---
+        // --- PHẦN TẠO PDF (Giữ nguyên logic cũ, chỉ thay grandTotal bằng finalTotal hiển thị cho đúng) ---
         String path = System.getProperty("user.home") + "\\Downloads\\bill\\";
-        
-        // QUAN TRỌNG: Kiểm tra và tạo thư mục nếu chưa có
         File directory = new File(path);
         if (!directory.exists()) {
-            directory.mkdirs(); // Tạo thư mục bill trong Downloads
+            directory.mkdirs();
         }
 
         com.itextpdf.text.Document doc = new com.itextpdf.text.Document();
@@ -573,11 +620,20 @@ public class PlaceOrder extends javax.swing.JFrame {
             doc.add(cafeName);
             Paragraph starLine = new Paragraph("***********************************");
             doc.add(starLine);
-            Paragraph paragraph3 = new Paragraph("\tBill ID: " + billId + "\nCustomer Name: " + customerName + "\nTotal Paid: " + grandTotal + "\n");
+            
+            // Hiển thị thông tin giảm giá trong PDF
+            String billInfo = "\tBill ID: " + billId + "\nCustomer Name: " + customerName + "\nTotal: " + grandTotal;
+            if (finalTotal < grandTotal) {
+                billInfo += "\nDiscount (5%): -" + (grandTotal - finalTotal);
+                billInfo += "\nFinal Paid: " + finalTotal;
+            } else {
+                billInfo += "\nTotal Paid: " + finalTotal;
+            }
+            
+            Paragraph paragraph3 = new Paragraph(billInfo + "\n");
             doc.add(paragraph3);
             doc.add(starLine);
             
-            // Tạo bảng PDF
             PdfPTable tb1 = new PdfPTable(4);
             tb1.addCell("Name");
             tb1.addCell("Price");
@@ -586,28 +642,19 @@ public class PlaceOrder extends javax.swing.JFrame {
             
             for (int i = 0; i < jTable2.getRowCount(); i++) {
                 String n = jTable2.getValueAt(i, 0).toString();
-                String d = jTable2.getValueAt(i, 1).toString(); // Lưu ý: Cột 1 là Quantity trong code addRow, nhưng title bạn để Price?
-                // Kiểm tra lại thứ tự addRow của bạn: name, quantity, price, total
-                // Ở btnAddToCart bạn add: new Object[]{name, quantity, price, productTotal}
-                // Vậy thứ tự index là: 0: Name, 1: Quantity, 2: Price, 3: Total
-                
-                // Sửa lại tiêu đề bảng PDF cho khớp với dữ liệu thực tế
-                // Hoặc sửa lại biến lấy dữ liệu:
-                String q = jTable2.getValueAt(i, 1).toString(); // Quantity
-                String p = jTable2.getValueAt(i, 2).toString(); // Price
-                String t = jTable2.getValueAt(i, 3).toString(); // Total
-                
+                String d = jTable2.getValueAt(i, 2).toString(); // Price
+                String r = jTable2.getValueAt(i, 1).toString(); // Quantity
+                String q = jTable2.getValueAt(i, 3).toString(); // Total
                 tb1.addCell(n);
-                tb1.addCell(p); // Price
-                tb1.addCell(q); // Quantity
-                tb1.addCell(t); // Total
+                tb1.addCell(d);
+                tb1.addCell(r);
+                tb1.addCell(q);
             }
             doc.add(tb1);
             doc.add(starLine);
             Paragraph thanksMsg = new Paragraph("Thank you, Please visit Again.");
             doc.add(thanksMsg);
             
-            // Mở file PDF
             OpenPdf.openById(String.valueOf(billId));
             
         } catch (Exception e) {

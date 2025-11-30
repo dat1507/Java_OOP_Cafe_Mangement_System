@@ -10,16 +10,19 @@ package model;
  */
 
 // Định nghĩa đối tượng User, bao gồm các thuộc tính (attributes): id, name, email, ...
-public class User {
+public abstract class User {
     private int id; 
     private String name; 
     private String email; 
     private String mobileNumber; 
-    private String address; 
     private String password; 
     private String securityQuestion; 
     private String answer; 
     private String status; 
+    
+    // Phương thức trừu tượng: Các lớp con (Admin, Guest) BẮT BUỘC phải viết lại hàm này
+    public abstract int calculateFinalBill(int totalBill);
+    // ---------------------
     
      // Constructor mặc định - Set status = "false" ngay khi tạo object
     public User() {
@@ -32,7 +35,6 @@ public class User {
         this.name = name;
         this.email = email;
         this.mobileNumber = mobileNumber;
-        this.address = address;
         this.password = password;
         this.securityQuestion = securityQuestion;
         this.answer = answer;
@@ -69,14 +71,6 @@ public class User {
 
     public void setMobileNumber(String mobileNumber) {
         this.mobileNumber = mobileNumber;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String getPassword() {

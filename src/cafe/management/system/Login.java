@@ -176,7 +176,7 @@ public class Login extends javax.swing.JFrame {
         String password = new String(passwordChars); // Chuyển sang String để sử dụng
 
         User user = null; 
-        user = UserDao.login(email, password);
+        user = UserDao.getUserForLogin(email, password);
 
         // Xóa password khỏi bộ nhớ ngay sau khi sử dụng
         java.util.Arrays.fill(passwordChars, '0');

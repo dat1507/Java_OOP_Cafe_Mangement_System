@@ -11,6 +11,8 @@ import java.util.Iterator;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 import model.User; 
+import model.Admin;
+import model.Guest;
 
 /**
  *
@@ -30,20 +32,43 @@ public class VerifyUsers extends javax.swing.JFrame {
     // Hàm để lấy thông tin người dùng ( trừ admin ) và hiển thị lên bảng 
     // Lấy 1 parameter là email 
     public void getAllRecords(String email) { 
-        // Lấy model của jTable1, type casting về DefaultTableModel => có thể thêm/ xóa dòng trên bảng 
         DefaultTableModel dtm = (DefaultTableModel) jTable1.getModel(); 
-        // Xóa toàn bộ dữ liệu hiện tại trong bảng => clean table before add new data
         dtm.setRowCount(0); 
         
-        // Lấy list User từ Database 
-        // Tạo iterator để duyệt của từng user trong list 
-        ArrayList<User> list = UserDao.getAllRecords(email);
+        // Gọi hàm DAO mới (có hỗ trợ search)
+        ArrayList<User> list = UserDao.getAllUsersSensitive(email);
         Iterator<User> itr = list.iterator(); 
-        // Thêm từng user vào table ( trừ admin ) 
+        
         while(itr.hasNext()) { 
             User userObj = itr.next(); 
+            
+            // Ẩn tài khoản admin chính chủ nếu muốn (tránh tự xóa mình)
             if (!userObj.getEmail().equals("admin@gmail.com")) { 
-                dtm.addRow(new Object[]{userObj.getId(),userObj.getName(), userObj.getEmail(), userObj.getMobileNumber(), userObj.getAddress(), userObj.getSecurityQuestion(), userObj.getStatus()});
+                
+                String purchaseCountDisplay = "N/A"; // Mặc định cho Admin hoặc User thường chưa phân loại
+                
+                // --- KỸ THUẬT OOP: Kiểm tra kiểu đối tượng ---
+                if (userObj instanceof Guest) {
+                    // Nếu là Guest -> Ép kiểu để lấy số lần mua
+                    int count = ((Guest) userObj).getPurchaseCount();
+                    purchaseCountDisplay = String.valueOf(count);
+                } else if (userObj instanceof Admin) {
+                    purchaseCountDisplay = "Admin";
+                }
+                // ---------------------------------------------
+
+                // Thêm dòng vào bảng (Nhớ sắp xếp đúng thứ tự cột bạn đã chỉnh ở Bước 2)
+                // Ví dụ thứ tự: ID | Name | Email | Mobile | Password | Purchase Count | Address | Security | Status
+                dtm.addRow(new Object[]{
+                    userObj.getId(),
+                    userObj.getName(), 
+                    userObj.getEmail(), 
+                    userObj.getMobileNumber(),
+                    userObj.getPassword(),       // Cột Password mới
+                    purchaseCountDisplay,        // Cột Purchase Count mới
+                    userObj.getSecurityQuestion(), 
+                    userObj.getStatus()
+                });
             }
         }
     }
@@ -91,8 +116,8 @@ public class VerifyUsers extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Search");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 90, -1, 20));
+        jLabel1.setText("Search (Email) :");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 90, -1, 20));
 
         txtEmail.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -107,7 +132,7 @@ public class VerifyUsers extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Name", "Email ", " Mobile Number", "Address", "Security Question", "Status"
+                "ID", "Name", "Email ", "Mobile Number", "Password", "Purchase Count", "Security Question", "Status"
             }
         ));
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -156,7 +181,7 @@ public class VerifyUsers extends javax.swing.JFrame {
         TableModel model = jTable1.getModel(); 
         // Lấy email và status của user đc chọn
         String email = model.getValueAt(index, 2).toString();
-        String status = model.getValueAt(index, 6).toString();
+        String status = model.getValueAt(index, 7).toString();
         // đổi status của user đc chọn 
         if(status.equals("true")) 
             status = "false"; 
