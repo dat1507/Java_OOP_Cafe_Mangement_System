@@ -30,7 +30,6 @@ public class Home extends javax.swing.JFrame {
         // Tạo logic nếu email khác với "admin@gmail.com" => ko hiện 4 button category, product, edit product và verify users 
         // => chỉ khi admin login mới có quyền sử dụng 4 button fuction (manage category, new product, .. )ở dưới, còn nếu normal user login thì ko hiện 
         if (!email.equals("admin@gmail.com")) {
-            btnCategory.setVisible(false);
             btnNewProduct.setVisible(false);
             btnViewEditDeleteProduct.setVisible(false);
             btnVerifyUsers.setVisible(false);
@@ -52,7 +51,6 @@ public class Home extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
-        btnCategory = new javax.swing.JButton();
         btnNewProduct = new javax.swing.JButton();
         btnViewEditDeleteProduct = new javax.swing.JButton();
         btnVerifyUsers = new javax.swing.JButton();
@@ -112,16 +110,6 @@ public class Home extends javax.swing.JFrame {
         });
         getContentPane().add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(1240, 20, -1, -1));
 
-        btnCategory.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnCategory.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/category.png"))); // NOI18N
-        btnCategory.setText("Mange Category");
-        btnCategory.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCategoryActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btnCategory, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 690, -1, -1));
-
         btnNewProduct.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnNewProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/new product.png"))); // NOI18N
         btnNewProduct.setText("New Product");
@@ -130,7 +118,7 @@ public class Home extends javax.swing.JFrame {
                 btnNewProductActionPerformed(evt);
             }
         });
-        getContentPane().add(btnNewProduct, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 690, -1, -1));
+        getContentPane().add(btnNewProduct, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 690, -1, -1));
 
         btnViewEditDeleteProduct.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnViewEditDeleteProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/view edit delete product.png"))); // NOI18N
@@ -140,7 +128,7 @@ public class Home extends javax.swing.JFrame {
                 btnViewEditDeleteProductActionPerformed(evt);
             }
         });
-        getContentPane().add(btnViewEditDeleteProduct, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 690, -1, -1));
+        getContentPane().add(btnViewEditDeleteProduct, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 690, -1, -1));
 
         btnVerifyUsers.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnVerifyUsers.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/verify users.png"))); // NOI18N
@@ -161,11 +149,6 @@ public class Home extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void btnCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryActionPerformed
-        // TODO add your handling code here:
-        new ManageCategory().setVisible(true);
-    }//GEN-LAST:event_btnCategoryActionPerformed
 
     // Logout Button 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -234,7 +217,6 @@ public class Home extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCategory;
     private javax.swing.JButton btnNewProduct;
     private javax.swing.JButton btnVerifyUsers;
     private javax.swing.JButton btnViewEditDeleteProduct;

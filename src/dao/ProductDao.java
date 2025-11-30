@@ -15,51 +15,74 @@ public class ProductDao {
     
     // --- AddNewProduct ---
     // static method save giống trong CategoryDao, lấy input là 1 Product Object 
-    public static void save(Product product) { 
-        String query = "insert into product(name, category, price) values('"+product.getName()+"', '"+product.getCategory()+"', '"+product.getPrice()+"')";
-        DbOperations.setDataOrDelete(query, "Product Added Successfully!");
+    public static void save(Product product) {
+        String query = "insert into product(name, category, price, image) values('" 
+                + product.getName() + "','" 
+                + product.getCategory() + "','" 
+                + product.getPrice() + "','" 
+                + product.getImage() + "')";
+        DbOperations.setDataOrDelete(query, "Product Added Successfully");
     }
     
-    // static method getAllRecords giống CategoryDao, tạo list các đối tượng Product
-    public static ArrayList<Product> getAllRecords () { 
-        ArrayList<Product> arrayList = new ArrayList<>(); 
-        try{
-            // Lấy dữ liệu từ table product, lưu vào rs 
+    // Lấy tất cả sản phẩm để hiển thị lên bảng
+    public static ArrayList<Product> getAllRecords() {
+        ArrayList<Product> arrayList = new ArrayList<>();
+        try {
             ResultSet rs = DbOperations.getData("select * from product");
-            while (rs.next()){ 
-                // Với mỗi dòng trong rs => Tạo một đối tượng Product mới và gán dữ liệu từ ResultSet
-                Product product = new Product(); 
+            while (rs.next()) {
+                Product product = new Product();
                 product.setId(rs.getInt("id"));
                 product.setName(rs.getString("name"));
                 product.setCategory(rs.getString("category"));
-                product.setPrice(rs.getString("price")); 
-                // thêm Product đó vào arraylist
-                arrayList.add(product); 
+                product.setPrice(rs.getString("price"));
+                product.setImage(rs.getString("image")); // Lấy thêm ảnh
+                arrayList.add(product);
             }
-        }
-        catch (Exception e) {
-            // Hiển thị lỗi nếu xảy ra vấn đề khi truy vấn
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
-        // method trả về arrayList
-        return arrayList; 
+        return arrayList;
     }
     
     // -----------------------------------------------------------------------------------------
     // --- View Edit Delete Product ---
-    public static void update(Product product){ 
-        String query = "update product set name = '"+product.getName()+"', category = '"+product.getCategory()+"', price = '"+product.getPrice()+"' where id = '"+product.getId()+"'";
+    // Cập nhật sản phẩm (Có cập nhật ảnh)
+    public static void update(Product product) {
+        String query = "update product set name='" + product.getName() 
+                + "',category='" + product.getCategory() 
+                + "',price='" + product.getPrice() 
+                + "',image='" + product.getImage() 
+                + "' where id='" + product.getId() + "'";
         DbOperations.setDataOrDelete(query, "Product Updated Successfully");
     }
     
-    public static void delete(String id) { 
-        String query = "delete from product where id = '"+id+"'";
+    // Xóa sản phẩm
+    public static void delete(String id) {
+        String query = "delete from product where id='" + id + "'";
         DbOperations.setDataOrDelete(query, "Product Deleted Successfully");
     }
     
+    // Hàm MỚI: Lấy chi tiết 1 sản phẩm theo ID (Dùng để hiển thị ảnh khi click vào bảng)
+    public static Product getProductById(String id) {
+        Product product = new Product();
+        try {
+            ResultSet rs = DbOperations.getData("select * from product where id='" + id + "'");
+            while (rs.next()) {
+                product.setName(rs.getString("name"));
+                product.setCategory(rs.getString("category"));
+                product.setPrice(rs.getString("price"));
+                product.setImage(rs.getString("image"));
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+        return product;
+    }
     
     // -----------------------------------------------------------------------------------------
     // Place Order Page
+    
+    // Lấy 1 list tất cả Product có category đc chọn từ Database ( parameter là category đc chọn ) 
     public static ArrayList<Product> getAllRecordsByCategory(String category) { 
         ArrayList<Product> arrayList = new ArrayList<>();
         try{
@@ -76,6 +99,7 @@ public class ProductDao {
         return arrayList; 
     }
     
+    // Trả về danh sách các Product có tên chứa chuỗi nhập vào và cùng category, nhưng mỗi product chỉ có setName().
     public static ArrayList<Product> filterProductByName(String name, String category) { 
         ArrayList<Product> arrayList = new ArrayList<>();
         try{
@@ -90,5 +114,25 @@ public class ProductDao {
             JOptionPane.showMessageDialog(null,e);
         }
         return arrayList; 
+    }
+    
+    // Tìm một sản phẩm duy nhất, dựa trên tên chính xác (name = '...').
+    public static Product getProductByname(String name) {
+        Product product = new Product();
+        try {
+            ResultSet rs = DbOperations.getData("select * from product where name='" + name + "'");
+            while (rs.next()) {
+                product.setName(rs.getString("name"));
+                product.setCategory(rs.getString("category"));
+                product.setPrice(rs.getString("price"));
+                
+                // --- THÊM DÒNG NÀY ---
+                product.setImage(rs.getString("image")); 
+                // ---------------------
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+        return product;
     }
 }

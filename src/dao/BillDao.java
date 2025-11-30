@@ -29,7 +29,7 @@ public class BillDao {
     }
     
     public static void save(Bill bill) { 
-        String query = "insert into bill velues('"+bill.getId()+"', '"+bill.getName()+"', '"+bill.getMobileNumber()+"', '"+bill.getEmail()+"', '"+bill.getDate()+"', '"+bill.getTotal()+"','"+bill.getCreatedBy()+"')";
+        String query = "insert into bill values('"+bill.getId()+"', '"+bill.getName()+"', '"+bill.getMobileNumber()+"', '"+bill.getEmail()+"', '"+bill.getDate()+"', '"+bill.getTotal()+"','"+bill.getCreatedBy()+"')";
         DbOperations.setDataOrDelete(query, "Bill Details Added Successfully");
     }
 }

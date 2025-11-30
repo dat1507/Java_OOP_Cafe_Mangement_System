@@ -4,6 +4,11 @@
  */
 package cafe.management.system;
 
+import java.io.File;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.Image;
 import java.util.*;
 import model.Category; 
 import model.Product; 
@@ -22,6 +27,8 @@ public class AddNewProduct extends javax.swing.JFrame {
     /**
      * Creates new form AddNewProduct
      */
+    
+    String imagePath = "";
     
     public AddNewProduct() {
         initComponents();
@@ -49,6 +56,8 @@ public class AddNewProduct extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel5 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
@@ -59,7 +68,14 @@ public class AddNewProduct extends javax.swing.JFrame {
         txtPrice = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
+        btnBrowse = new javax.swing.JButton();
+        lblImage = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/small-page-background.png"))); // NOI18N
+
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/small-page-background.png"))); // NOI18N
+        jLabel7.setText("jLabel7");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocation(new java.awt.Point(350, 154));
@@ -97,7 +113,7 @@ public class AddNewProduct extends javax.swing.JFrame {
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Price");
+        jLabel4.setText("Price (k VND)");
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 200, -1, -1));
 
         txtName.addActionListener(new java.awt.event.ActionListener() {
@@ -112,6 +128,7 @@ public class AddNewProduct extends javax.swing.JFrame {
         });
         getContentPane().add(txtName, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 90, 319, -1));
 
+        txtCategory.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " " }));
         txtCategory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtCategoryActionPerformed(evt);
@@ -134,7 +151,7 @@ public class AddNewProduct extends javax.swing.JFrame {
                 btnSaveActionPerformed(evt);
             }
         });
-        getContentPane().add(btnSave, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 260, -1, -1));
+        getContentPane().add(btnSave, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 320, -1, -1));
 
         btnClear.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/clear.png"))); // NOI18N
@@ -144,10 +161,25 @@ public class AddNewProduct extends javax.swing.JFrame {
                 btnClearActionPerformed(evt);
             }
         });
-        getContentPane().add(btnClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 260, -1, -1));
+        getContentPane().add(btnClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 320, -1, -1));
 
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/small-page-background.png"))); // NOI18N
-        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        btnBrowse.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnBrowse.setForeground(new java.awt.Color(0, 0, 0));
+        btnBrowse.setText("Import Image");
+        btnBrowse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBrowseActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnBrowse, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 260, -1, -1));
+
+        lblImage.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblImage.setForeground(new java.awt.Color(255, 255, 255));
+        lblImage.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 255, 255), 1, true));
+        getContentPane().add(lblImage, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, 150, 140));
+
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/small-page-background.png"))); // NOI18N
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -185,6 +217,7 @@ public class AddNewProduct extends javax.swing.JFrame {
         product.setName(txtName.getText()); 
         product.setCategory((String)txtCategory.getSelectedItem());
         product.setPrice(txtPrice.getText());
+        product.setImage(imagePath);
         // Lưu Product vừa tạo 
         ProductDao.save(product);
         // hiệu ứng Reload 
@@ -207,6 +240,34 @@ public class AddNewProduct extends javax.swing.JFrame {
     private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNameActionPerformed
+
+    private void btnBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBrowseActionPerformed
+        // TODO add your handling code here:
+        // Tạo trình chọn file
+        JFileChooser fileChooser = new JFileChooser();
+        
+        // Tạo bộ lọc chỉ cho phép chọn file ảnh (jpg, png)
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Images", "jpg", "png", "jpeg");
+        fileChooser.addChoosableFileFilter(filter);
+        
+        // Hiển thị hộp thoại mở file
+        int result = fileChooser.showOpenDialog(null);
+        
+        // Nếu người dùng bấm "Open" (đồng ý chọn file)
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            imagePath = selectedFile.getAbsolutePath().replace("\\", "/"); // Lưu đường dẫn tuyệt đối vào biến toàn cục
+            
+            // Xử lý hiển thị ảnh lên Label (lblImage)
+            ImageIcon ii = new ImageIcon(imagePath);
+            // Co giãn ảnh (Scale) cho vừa khít với khung của Label
+            // Lưu ý: lblImage.getWidth() lấy chiều rộng hiện tại của nhãn trên giao diện
+            Image image = ii.getImage().getScaledInstance(lblImage.getWidth(), lblImage.getHeight(), Image.SCALE_SMOOTH);
+            
+            // Gán ảnh đã co giãn vào Label
+            lblImage.setIcon(new ImageIcon(image));
+        }
+    }//GEN-LAST:event_btnBrowseActionPerformed
 
     /**
      * @param args the command line arguments
@@ -234,6 +295,7 @@ public class AddNewProduct extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBrowse;
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton jButton1;
@@ -242,6 +304,9 @@ public class AddNewProduct extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel lblImage;
     private javax.swing.JComboBox<String> txtCategory;
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtPrice;

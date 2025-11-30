@@ -24,6 +24,7 @@ public class Signup extends javax.swing.JFrame {
     public Signup() {
         initComponents();
         btnSave.setEnabled(false);
+
     }
 
     public void clear() {
@@ -89,7 +90,6 @@ public class Signup extends javax.swing.JFrame {
         jButton4.setText("jButton4");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
@@ -376,4 +376,28 @@ public class Signup extends javax.swing.JFrame {
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtSecurityQuestion;
     // End of variables declaration//GEN-END:variables
+
+    // --- THÊM ĐOẠN NÀY VÀO CUỐI CLASS (TRƯỚC DẤU ĐÓNG NGOẶC }) ---
+    class BackgroundPanel extends javax.swing.JPanel {
+
+        private java.awt.Image backgroundImage;
+
+        public BackgroundPanel(String fileName) {
+            try {
+                backgroundImage = new javax.swing.ImageIcon(getClass().getResource(fileName)).getImage();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected void paintComponent(java.awt.Graphics g) {
+            super.paintComponent(g);
+            // Vẽ hình ảnh luôn co giãn theo kích thước cửa sổ
+            if (backgroundImage != null) {
+                g.drawImage(backgroundImage, 0, 0, this.getWidth(), this.getHeight(), this);
+            }
+        }
+    }
+    // --------------------------------------------------------------
 }

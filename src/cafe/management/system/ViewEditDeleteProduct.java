@@ -13,6 +13,11 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import model.Category;
+import javax.swing.ImageIcon;
+import java.awt.Image;
+import java.io.File;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -25,6 +30,10 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
     /**
      * Creates new form ViewEditDeleteProduct
      */
+    
+    // Biến lưu đường dẫn ảnh (Rất quan trọng)
+    String imagePath = "";
+    
     public ViewEditDeleteProduct() {
         initComponents();
         btnUpdate.setEnabled(false);
@@ -66,6 +75,8 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
         btnClear = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        lblImage = new javax.swing.JLabel();
+        btnBrowse = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -148,7 +159,7 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
                 btnUpdateActionPerformed(evt);
             }
         });
-        getContentPane().add(btnUpdate, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 420, -1, -1));
+        getContentPane().add(btnUpdate, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 620, -1, -1));
 
         btnDelete.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/delete.png"))); // NOI18N
@@ -158,7 +169,7 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
                 btnDeleteActionPerformed(evt);
             }
         });
-        getContentPane().add(btnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 420, -1, -1));
+        getContentPane().add(btnDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 620, -1, -1));
 
         btnClear.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         btnClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/clear.png"))); // NOI18N
@@ -168,7 +179,7 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
                 btnClearActionPerformed(evt);
             }
         });
-        getContentPane().add(btnClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 420, -1, -1));
+        getContentPane().add(btnClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, 620, -1, -1));
 
         jTable1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -179,7 +190,7 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "ID", "Name", "Category", "Price"
+                "ID", "Name", "Category", "Price (k VND)"
             }
         ));
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -191,8 +202,20 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 150, -1, -1));
 
+        lblImage.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)));
+        getContentPane().add(lblImage, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 446, 150, 140));
+
+        btnBrowse.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnBrowse.setText("Change Image");
+        btnBrowse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBrowseActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnBrowse, new org.netbeans.lib.awtextra.AbsoluteConstraints(318, 502, -1, -1));
+
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/full-page-background.PNG"))); // NOI18N
-        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1360, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -220,6 +243,7 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
         product.setName(txtName.getText());
         product.setCategory((String) jComboBox1.getSelectedItem());
         product.setPrice(txtPrice.getText());
+        product.setImage(imagePath); // Cập nhật đường dẫn ảnh (cũ hoặc mới)
         // Update Product trong database 
         ProductDao.update(product);
         // Reload animation
@@ -263,50 +287,53 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
     
     // Event khi user Clicked vào 1 hàng trong JTable1 ( Chọn 1 Product )
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        // TODO add your handling code here:
-        
-        // Lấy index của hàng được chọn
         int index = jTable1.getSelectedRow();
-        // Lấy giá trị của từng ô trong bảng qua .getModel()
         TableModel model = jTable1.getModel();
-        
-        // Lấy id của Product ( hàng được chọn ) => hiển thị lên UI qua lblId
+
+        // 1. Lấy thông tin cơ bản từ bảng và hiển thị
         String id = model.getValueAt(index, 0).toString();
         lblId.setText(id);
-        
-        // Lấy name của Product ( hàng được chọn ) => hiển thị lên UI qua txtName
+
         String name = model.getValueAt(index, 1).toString();
         txtName.setText(name);
-        
-        // Lấy Category của Product đc chọn
-        String category = model.getValueAt(index, 2).toString();
-        
-        // Lấy Price của Product đc chọn => hiển thị lên UI qua txtPrice 
+
         String price = model.getValueAt(index, 3).toString();
         txtPrice.setText(price);
-        
-        // Enable Update & Delete button
-        btnUpdate.setEnabled(true);
-        btnDelete.setEnabled(true);
-        
-        // Xóa toàn bộ item cũ trong ComboBox => tránh trùng lặp
-        jComboBox1.removeAllItems();
-        // Add category hiện tại của item được click lên đầu danh sách => hiển thị đúng category đang đc chọn
-        jComboBox1.addItem(category);
-        
-        // Lấy list category và add vào ComboBox:
-        // Lấy toàn bộ danh sách category từ database
-        // Duyệt qua từng category
-        // Nếu Category ko trùng với category hiện tại của item => Add vào ComboBox
-        // => ComboBox có đầy đủ category nhưng category của Product đc chọn sẽ nằm ở trên cùng
-        ArrayList<Category> categoryList = CategoryDao.getAllRecords();
-        Iterator<Category> categoryItr = categoryList.iterator();
-        while (categoryItr.hasNext()) {
-            Category categoryObj = categoryItr.next();
-            if (!categoryObj.getName().equals(category)) {
-                jComboBox1.addItem(categoryObj.getName());
+
+        // 2. Gọi DB để lấy thông tin đầy đủ (bao gồm ảnh)
+        Product product = ProductDao.getProductById(id);
+        imagePath = product.getImage();
+
+        // 3. Xử lý hiển thị ảnh
+        lblImage.setIcon(null); // Reset ảnh về trống trước khi load ảnh mới
+
+        if (imagePath != null && !imagePath.equals("")) {
+            try {
+                File file = new File(imagePath);
+                // Kiểm tra file có thực sự tồn tại
+                if (file.exists()) {
+                    ImageIcon ii = new ImageIcon(imagePath);
+                    // Scale ảnh theo kích thước cố định (150x140) để tránh lỗi hiển thị
+                    Image image = ii.getImage().getScaledInstance(150, 140, Image.SCALE_SMOOTH);
+                    lblImage.setIcon(new ImageIcon(image));
+                }
+            } catch (Exception e) {
+                // Nếu lỗi load ảnh thì giữ nguyên là null (không hiện gì)
+                lblImage.setIcon(null);
             }
         }
+
+        // 4. Bật các nút chức năng
+        btnUpdate.setEnabled(true);
+        btnDelete.setEnabled(true);
+
+        // 5. Xử lý ComboBox Category
+        jComboBox1.removeAllItems();
+        jComboBox1.addItem("Meals");
+        jComboBox1.addItem("Drinks");
+        
+        String category = model.getValueAt(index, 2).toString();
+        jComboBox1.setSelectedItem(category);
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
@@ -335,6 +362,29 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    private void btnBrowseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBrowseActionPerformed
+        // TODO add your handling code here:
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Images", "jpg", "png", "jpeg");
+        fileChooser.addChoosableFileFilter(filter);
+        
+        int result = fileChooser.showOpenDialog(null);
+        
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            
+            // --- SỬA LỖI TẠI ĐÂY ---
+            // Lấy đường dẫn và đổi dấu \ thành / ngay lập tức
+            imagePath = selectedFile.getAbsolutePath().replace("\\", "/"); 
+            // -----------------------
+
+            // Hiển thị ảnh xem trước
+            ImageIcon ii = new ImageIcon(imagePath);
+            Image image = ii.getImage().getScaledInstance(lblImage.getWidth(), lblImage.getHeight(), Image.SCALE_SMOOTH);
+            lblImage.setIcon(new ImageIcon(image));
+        }
+    }//GEN-LAST:event_btnBrowseActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -361,6 +411,7 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBrowse;
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnUpdate;
@@ -375,6 +426,7 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel lblId;
+    private javax.swing.JLabel lblImage;
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtPrice;
     // End of variables declaration//GEN-END:variables
