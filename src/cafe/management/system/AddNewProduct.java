@@ -70,7 +70,7 @@ public class AddNewProduct extends javax.swing.JFrame {
         btnClear = new javax.swing.JButton();
         btnBrowse = new javax.swing.JButton();
         lblImage = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
 
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/small-page-background.png"))); // NOI18N
 
@@ -178,8 +178,8 @@ public class AddNewProduct extends javax.swing.JFrame {
         lblImage.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(255, 255, 255), 1, true));
         getContentPane().add(lblImage, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, 150, 140));
 
-        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/small-page-background.png"))); // NOI18N
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/simple_big_bkg.png"))); // NOI18N
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 700, 400));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -304,8 +304,8 @@ public class AddNewProduct extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel lblImage;
     private javax.swing.JComboBox<String> txtCategory;
     private javax.swing.JTextField txtName;

@@ -77,7 +77,7 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         lblImage = new javax.swing.JLabel();
         btnBrowse = new javax.swing.JButton();
-        jLabel7 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -214,8 +214,8 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
         });
         getContentPane().add(btnBrowse, new org.netbeans.lib.awtextra.AbsoluteConstraints(318, 502, -1, -1));
 
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/full-page-background.PNG"))); // NOI18N
-        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1360, -1));
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/simple_big_bkg.png"))); // NOI18N
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -422,7 +422,7 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel lblId;

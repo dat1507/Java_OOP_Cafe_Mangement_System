@@ -9,11 +9,9 @@ package model;
  * @author phuoc
  */
 public class Admin extends User {
-    // --- OVERRIDING (Ghi đè) ---
-    // Admin => free ! 
+    // --- OVERRIDING  ---! 
     @Override
     public int calculateFinalBill(int totalBill) {
-        totalBill = 0; 
         return totalBill; 
     }
 }
