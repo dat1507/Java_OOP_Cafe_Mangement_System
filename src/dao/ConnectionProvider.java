@@ -18,7 +18,7 @@ public class ConnectionProvider {
             // Tải driver MySQL vào bộ nhớ 
             Class.forName("com.mysql.cj.jdbc.Driver");
             
-            // getConnection() Phương thức yêu cầu Java tạo kết nối đến Database bằng giao thức JDBC 
+            // getConnection(): a method to request Java to create a connection to Database with JDBC protocol
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/cms?useSSl=false","root","123456");
             return con;
         }

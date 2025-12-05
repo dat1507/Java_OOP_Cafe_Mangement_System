@@ -32,9 +32,11 @@ public class UserDao {
     public static User getUserForLogin(String email, String password) {
         User user = null;
         try {
+            
+            // Retrieve data from the database
             String query = "select * from user where email='" + email + "' and password='" + password + "'";
             ResultSet rs = DbOperations.getData(query);
-            
+            // Based on the 'role' column in MySQL, decide whether to initialize user = new Admin() or user = new Guest().
             if (rs.next()) {
                 String role = rs.getString("role"); // Lấy role từ DB
                 
@@ -60,6 +62,8 @@ public class UserDao {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
+        // The return type of this function is the parent class User => upcasting
+        // => allows the application to handle any user type without knowing the specific details at this stage.
         return user;
     }
     
@@ -88,7 +92,7 @@ public class UserDao {
     }
     
     
-    //--------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------
     // VerifyUsers (Cho Admin duyệt user mới)
     
     public static ArrayList<User> getAllRecords(String email) { 
@@ -133,7 +137,7 @@ public class UserDao {
         DbOperations.setDataOrDelete(query, "");
     }
     
-    // 3. Lấy toàn bộ thông tin nhạy cảm (Password, Role...) cho màn hình Admin mới
+    // 3. Lấy toàn bộ thông tin (Password, Role...) cho màn hình Admin mới
     public static ArrayList<User> getAllUsersSensitive(String email) {
         ArrayList<User> list = new ArrayList<>();
         try {
@@ -143,7 +147,7 @@ public class UserDao {
                 String role = rs.getString("role");
                 User user;
                 
-                // Logic Đa hình (Polymorphism)
+                // (Polymorphism)
                 if (role != null && role.equalsIgnoreCase("admin")) {
                     user = new Admin();
                 } else {

@@ -20,16 +20,16 @@ public abstract class User {
     private String answer; 
     private String status; 
     
-    // Phương thức trừu tượng: Các lớp con (Admin, Guest) BẮT BUỘC phải viết lại hàm này
+    // abstract method
     public abstract int calculateFinalBill(int totalBill);
     // ---------------------
     
-     // Constructor mặc định - Set status = "false" ngay khi tạo object
+    // Default Constructor - Set status = "false" ngay khi tạo object
     public User() {
         this.status = "false"; // Giá trị mặc định
     }
     
-    // Constructor đầy đủ (tuỳ chọn)
+    // Constructor 
     public User(String name, String email, String mobileNumber, String address, 
                 String password, String securityQuestion, String answer) {
         this.name = name;

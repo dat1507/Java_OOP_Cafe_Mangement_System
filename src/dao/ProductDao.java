@@ -56,10 +56,20 @@ public class ProductDao {
         DbOperations.setDataOrDelete(query, "Product Updated Successfully");
     }
     
-    // Xóa sản phẩm
-    public static void delete(String id) {
-        String query = "delete from product where id='" + id + "'";
-        DbOperations.setDataOrDelete(query, "Product Deleted Successfully");
+    
+    // Method Overloading for Delete Product Function 
+    // 2 methods with the same name, but different signatures
+    //  xóa theo ID (Nhận tham số int)
+    public static void delete(int id) {
+        String query = "delete from product where id = '" + id + "'";
+        DbOperations.setDataOrDelete(query, "Product Deleted Successfully via ID");
+    }
+
+    // 2. Hàm xóa theo Tên (Nhận tham số String) -> Overloading
+    // Cùng tên hàm "delete", nhưng khác kiểu tham số đầu vào (String vs int)
+    public static void delete(String name) {
+        String query = "delete from product where name = '" + name + "'";
+        DbOperations.setDataOrDelete(query, "Product Deleted Successfully via Name");
     }
     
     // Hàm MỚI: Lấy chi tiết 1 sản phẩm theo ID (Dùng để hiển thị ảnh khi click vào bảng)

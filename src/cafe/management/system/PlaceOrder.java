@@ -565,10 +565,15 @@ public class PlaceOrder extends javax.swing.JFrame {
         Date date = new Date();
         String todaydate = dFormat.format(date);
         
-        // --- 1. ÁP DỤNG TÍNH ĐA HÌNH (POLYMORPHISM) ---
+        // --- (POLYMORPHISM) ---
         // Gọi hàm calculateFinalBill(). 
         // Nếu userModel là Admin -> Chạy code file Admin.java (giữ nguyên giá)
         // Nếu userModel là Guest -> Chạy code file Guest.java (giảm giá nếu mua > 10 lần)
+        
+        // At Compile Time, the code only knows this is a User object.
+        // But at Runtime, Java checks if the logged-in user is actually an Admin or a Guest 
+        // and executes the correct logic (either giving a discount or not).
+        // Clean and flexible => If I want to add a 'VIP User' later => don't need to change this code, just create a new class
         int finalTotal = userModel.calculateFinalBill(grandTotal);
         String totalStr = String.valueOf(finalTotal);
         

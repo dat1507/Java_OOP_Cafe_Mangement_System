@@ -44,10 +44,21 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
         String name = txtName.getText();
         String price = txtPrice.getText();
         String category = (String) jComboBox1.getSelectedItem();
+        String id = lblId.getText(); // Lấy ID hiện tại
+
+        // 1. Logic cho nút Update (Cần điền đủ Tên, Giá, Category)
         if (!name.equals("") && !price.equals("") && category != null) {
             btnUpdate.setEnabled(true);
         } else {
             btnUpdate.setEnabled(false);
+        }
+        
+        // 2. Logic cho nút Delete  
+        // Enable khi: Có nhập Tên (để xóa theo tên) HOẶC Đã chọn một dòng (ID khác "00")
+        if (!name.equals("") || (!id.equals("00") && !id.equals(""))) {
+            btnDelete.setEnabled(true);
+        } else {
+            btnDelete.setEnabled(false);
         }
     }
 
@@ -337,11 +348,32 @@ public class ViewEditDeleteProduct extends javax.swing.JFrame {
     }//GEN-LAST:event_jTable1MouseClicked
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        // TODO add your handling code here:
-        String id = lblId.getText();
-        int a = JOptionPane.showConfirmDialog(null, "Do you want to Delete this product?", "Select", JOptionPane.YES_NO_OPTION);
+        // Lấy dữ liệu từ giao diện
+        String idStr = lblId.getText(); // Mặc định là "00" nếu chưa chọn
+        String name = txtName.getText();
+        
+        // Hỏi xác nhận trước khi xóa
+        int a = JOptionPane.showConfirmDialog(null, "Do you want to Delete product: " + name + "?", "Select", JOptionPane.YES_NO_OPTION);
+        
         if (a == 0) {
-            ProductDao.delete(id);
+            // --- LOGIC OVERLOADING Ở ĐÂY ---
+            
+            // Trường hợp 1: Nếu người dùng đã click vào bảng (ID khác "00") -> Xóa theo ID (Chính xác nhất)
+            if (!idStr.equals("00") && !idStr.equals("")) {
+                int id = Integer.parseInt(idStr);
+                ProductDao.delete(id); // Gọi hàm delete(int)
+            } 
+            // Trường hợp 2: Nếu chưa click bảng nhưng đã nhập Tên -> Xóa theo Tên
+            else if (!name.equals("")) {
+                ProductDao.delete(name); // Gọi hàm delete(String) -> Đây là Overloading
+            }
+            else {
+                // Trường hợp 3: Không có ID và cũng không có Tên
+                JOptionPane.showMessageDialog(null, "Please select a product or enter a Name to delete!");
+                return; // Dừng lại, không reload trang
+            }
+            
+            // Refresh lại trang sau khi xóa thành công
             setVisible(false);
             new ViewEditDeleteProduct().setVisible(true);
         }

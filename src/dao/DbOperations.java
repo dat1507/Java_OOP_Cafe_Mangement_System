@@ -11,6 +11,10 @@ import java.sql.*;
  * @author phuoc
  */
 
+// used Encapsulation to hide the complex JDBC connection and Statement creation.
+// The rest of the app just calls setDataOrDelete() without worrying about how the database actually connects
+
+
 // Class này tạo 1 hàm tiện ích ( ultily function ) để thực hiện các lệnh SQL dạng UPDATE 
 // như INSERT, UPDATE, DELETE, và có thể hiển thị kết quả ngay trên giao diện
 
